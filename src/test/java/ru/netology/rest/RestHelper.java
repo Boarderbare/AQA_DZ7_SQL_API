@@ -7,10 +7,11 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import ru.netology.data.DataHelper;
 
+
 import static io.restassured.RestAssured.given;
 
 public class RestHelper {
-    private RequestSpecification requestSpec = new RequestSpecBuilder()
+    private final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
@@ -21,10 +22,9 @@ public class RestHelper {
     public void login() {
         given()
                 .spec(requestSpec)
-                .pathParam("login", DataHelper.getUserAuth().getLogin())
-                .pathParam("password", DataHelper.getUserAuth().getPassword())
+                .body(DataHelper.UserAuth.getUserAuth())
                 .when()
-                .post("/api/auth/{login}/{password}")
+                .post("/api/auth")
                 .then()
                 .statusCode(200);
     }
@@ -33,20 +33,51 @@ public class RestHelper {
         Response response =
                 given()
                         .spec(requestSpec)
-                        .pathParam("login", DataHelper.getUserAuth().getLogin())
-                        .pathParam("password", DataHelper.getCode())
+                        .body(DataHelper.UserVerification.getUserVerification())
                         .when()
-                        .post("api/auth/verification/{login}/{password}")
+                        .post("api/auth/verification")
                         .then()
                         .statusCode(200)
                         .extract()
                         .response();
+
         return response.path("token");
     }
 
-    void checkBalance() {
+    public void transferCardToCard(DataHelper.Transaction info) {
+        given()
+                .spec(requestSpec)
+                .auth().oauth2(getToken())
+                .body(info)
+                .when()
+                .post("/api/transfer")
+                .then()
+                .statusCode(200);
     }
 
-    void transferCardToCard() {
+    public void transferErrorCardToCard(DataHelper.Transaction info) {
+        given()
+                .spec(requestSpec)
+                .auth().oauth2(getToken())
+                .body(info)
+                .when()
+                .post("/api/transfer")
+                .then()
+                .statusCode(404);
     }
+
+//    public List<DataHelper.Card> checkCards() {
+//        List<DataHelper.Card> cards =
+//                given()
+//                        .spec(requestSpec)
+//                        .auth().oauth2(getToken())
+//                        .when()
+//                        .get("api/cards")
+//                        .then()
+//                        .statusCode(200)
+//                        .extract()
+//                        .as(ArrayList<DataHelper.Card>());
+//        return cards;
+//    }
+
 }
