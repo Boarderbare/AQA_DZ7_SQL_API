@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
+import ru.netology.rest.RestHelper;
 
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class DataHelper {
 
     @Value
     public static class Transaction {
+
         private String from;
         private String to;
         private int amount;

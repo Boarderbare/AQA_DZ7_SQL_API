@@ -5,12 +5,14 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.experimental.UtilityClass;
 import ru.netology.data.DataHelper;
-
 
 import static io.restassured.RestAssured.given;
 
+@UtilityClass
 public class RestHelper {
+
     private final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
@@ -19,7 +21,7 @@ public class RestHelper {
             .log(LogDetail.ALL)
             .build();
 
-    public void login() {
+    public static void login() {
         given()
                 .spec(requestSpec)
                 .body(DataHelper.UserAuth.getUserAuth())
@@ -29,7 +31,7 @@ public class RestHelper {
                 .statusCode(200);
     }
 
-    public String getToken() {
+    public static String getToken() {
         Response response =
                 given()
                         .spec(requestSpec)
@@ -44,10 +46,10 @@ public class RestHelper {
         return response.path("token");
     }
 
-    public void transferCardToCard(DataHelper.Transaction info) {
+    public static void transferCardToCard(String token, DataHelper.Transaction info) {
         given()
                 .spec(requestSpec)
-                .auth().oauth2(getToken())
+                .auth().oauth2(token)
                 .body(info)
                 .when()
                 .post("/api/transfer")
@@ -55,10 +57,10 @@ public class RestHelper {
                 .statusCode(200);
     }
 
-    public void transferErrorCardToCard(DataHelper.Transaction info) {
+    public static void transferErrorCardToCard(String token, DataHelper.Transaction info) {
         given()
                 .spec(requestSpec)
-                .auth().oauth2(getToken())
+                .auth().oauth2(token)
                 .body(info)
                 .when()
                 .post("/api/transfer")

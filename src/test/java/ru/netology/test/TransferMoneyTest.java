@@ -22,16 +22,15 @@ public class TransferMoneyTest {
 
     @Test
     void shouldTransferFromFirstCardToSecond() {
-        RestHelper rest = new RestHelper();
-        rest.login();
-        rest.getToken();
+        RestHelper.login();
+        var token = RestHelper.getToken();
         var amountTransfer = 1;
         var numberCartFrom = 1;
         var numberCartTo = 2;
         var infoTransaction = DataHelper.Transaction.getInfoTransaction(numberCartFrom, numberCartTo, amountTransfer);
         var cardFirstBeforeTransfer = DataHelper.getCard(numberCartFrom).getBalance();
         var cardSecondBeforeTransfer = DataHelper.getCard(numberCartTo).getBalance();
-        rest.transferCardToCard(infoTransaction);
+        RestHelper.transferCardToCard(token,infoTransaction);
         var cardBalanceFirstAfterTransfer = DataHelper.getCard(numberCartFrom).getBalance();
         var cardBalanceSecondAfterTransfer = DataHelper.getCard(numberCartTo).getBalance();
 
@@ -42,16 +41,15 @@ public class TransferMoneyTest {
 
     @Test
     void shouldTransferFromSecondCardToFirst() {
-        RestHelper rest = new RestHelper();
-        rest.login();
-        rest.getToken();
+        RestHelper.login();
+        var token = RestHelper.getToken();
         var amountTransfer = 9999;
         var numberCartFrom = 2;
         var numberCartTo = 1;
         var infoTransaction = DataHelper.Transaction.getInfoTransaction(numberCartFrom, numberCartTo, amountTransfer);
         var cardFirstBeforeTransfer = DataHelper.getCard(numberCartTo).getBalance();
         var cardSecondBeforeTransfer = DataHelper.getCard(numberCartFrom).getBalance();
-        rest.transferCardToCard(infoTransaction);
+        RestHelper.transferCardToCard(token,infoTransaction);
         var cardBalanceFirstAfterTransfer = DataHelper.getCard(numberCartTo).getBalance();
         var cardBalanceSecondAfterTransfer = DataHelper.getCard(numberCartFrom).getBalance();
 
@@ -62,30 +60,24 @@ public class TransferMoneyTest {
 
     @Test
     void shouldNotTransferCardNoExistFromUser() {
-        RestHelper rest = new RestHelper();
-        rest.login();
-        rest.getToken();
+        RestHelper.login();
+        var token = RestHelper.getToken();
         var amountTransfer = 9999;
         var numberCartFrom = 3;
         var numberCartTo = 1;
         var infoTransaction = DataHelper.Transaction.getInfoTransaction(numberCartFrom, numberCartTo, amountTransfer);
-        var cardFirstBeforeTransfer = DataHelper.getCard(numberCartTo).getBalance();
-        var cardSecondBeforeTransfer = DataHelper.getCard(numberCartFrom).getBalance();
-        rest.transferErrorCardToCard(infoTransaction);
+        RestHelper.transferCardToCard(token,infoTransaction);
     }
 
     @Test
     void shouldNotTransferNotEnoughFounds() {
-        RestHelper rest = new RestHelper();
-        rest.login();
-        rest.getToken();
+        RestHelper.login();
+        var token = RestHelper.getToken();
         var amountTransfer = 100001;
         var numberCartFrom = 2;
         var numberCartTo = 1;
         var infoTransaction = DataHelper.Transaction.getInfoTransaction(numberCartFrom, numberCartTo, amountTransfer);
-        var cardFirstBeforeTransfer = DataHelper.getCard(numberCartTo).getBalance();
-        var cardSecondBeforeTransfer = DataHelper.getCard(numberCartFrom).getBalance();
-        rest.transferErrorCardToCard(infoTransaction);
+        RestHelper.transferCardToCard(token,infoTransaction);
     }
 }
 
