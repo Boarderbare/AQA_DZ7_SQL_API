@@ -4,11 +4,9 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
-import ru.netology.rest.RestHelper;
 
 import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DataHelper {
     public DataHelper() {
@@ -16,35 +14,35 @@ public class DataHelper {
 
     @Value
     public static class UserAuth {
-
         private String login;
         private String password;
+    }
 
-        public static UserAuth getUserAuth() {
-            return new UserAuth("vasya", "qwerty123");
-        }
+    public static UserAuth getUserAuth(int user) {
+        List<UserAuth> users = new ArrayList<>();
+        users.add(new UserAuth("vasya", "qwerty123"));
+        return users.get(user - 1);
     }
 
     @Value
     public static class UserVerification {
         private String login;
         private String code;
+    }
 
-        public static UserVerification getUserVerification() {
-            return new UserVerification(UserAuth.getUserAuth().getLogin(), DataHelper.getCode());
-        }
+    public static UserVerification getUserVerification(int user) {
+        return new UserVerification(getUserAuth(user).getLogin(), DataHelper.getCode(user));
     }
 
     @Value
     public static class Transaction {
-
         private String from;
         private String to;
         private int amount;
+    }
 
-        public static Transaction getInfoTransaction(int from, int to, int amount) {
-            return new Transaction(getCard(from).getNumber(), getCard(to).getNumber(), amount);
-        }
+    public static Transaction getInfoTransaction(int from, int to, int amount) {
+        return new Transaction(getCard(from).getNumber(), getCard(to).getNumber(), amount);
     }
 
     @Value
@@ -74,14 +72,14 @@ public class DataHelper {
     }
 
     @SneakyThrows
-    public static String getCode() {
-        Thread.sleep(100);
+    public static String getCode(int user) {
+        Thread.sleep(500);
         var runner = new QueryRunner();
         var getCode = "SELECT code FROM auth_codes WHERE user_id= (select id from users where login=?) order by created DESC;";
 
         try (var conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/app", "app", "pass");) {
-            return runner.query(conn, getCode, UserAuth.getUserAuth().getLogin(), new ScalarHandler<>());
+            return runner.query(conn, getCode, getUserAuth(user).getLogin(), new ScalarHandler<>());
         }
     }
 

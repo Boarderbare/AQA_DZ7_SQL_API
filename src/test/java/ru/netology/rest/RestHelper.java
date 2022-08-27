@@ -21,28 +21,27 @@ public class RestHelper {
             .log(LogDetail.ALL)
             .build();
 
-    public static void login() {
+    public static void login(DataHelper.UserAuth user) {
         given()
                 .spec(requestSpec)
-                .body(DataHelper.UserAuth.getUserAuth())
+                .body(user)
                 .when()
                 .post("/api/auth")
                 .then()
                 .statusCode(200);
     }
 
-    public static String getToken() {
+    public static String getToken(DataHelper.UserVerification info) {
         Response response =
                 given()
                         .spec(requestSpec)
-                        .body(DataHelper.UserVerification.getUserVerification())
+                        .body(info)
                         .when()
                         .post("api/auth/verification")
                         .then()
                         .statusCode(200)
                         .extract()
                         .response();
-
         return response.path("token");
     }
 
@@ -67,19 +66,4 @@ public class RestHelper {
                 .then()
                 .statusCode(404);
     }
-
-//    public List<DataHelper.Card> checkCards() {
-//        List<DataHelper.Card> cards =
-//                given()
-//                        .spec(requestSpec)
-//                        .auth().oauth2(getToken())
-//                        .when()
-//                        .get("api/cards")
-//                        .then()
-//                        .statusCode(200)
-//                        .extract()
-//                        .as(ArrayList<DataHelper.Card>());
-//        return cards;
-//    }
-
 }
